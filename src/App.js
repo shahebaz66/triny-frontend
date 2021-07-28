@@ -1,23 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import Tab from "./components/tab";
+import axios from "axios";
 
 function App() {
+  var [state, setState] = useState([]);
+  useEffect(() => {
+    axios.get("https://triny-backend.herokuapp.com/getlist").then((res, err) => {
+      var temp = [];
+
+      for (var i of res.data.data) {
+        temp.push({
+          displayName: i.displayName,
+          webhookState: i.webhookState,
+          isFallback: i.isFallback,
+          trainingPhrases: i.trainingPhrases,
+          priority: i.priority,
+        });
+      }
+
+      setState(temp);
+    });
+  }, []);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {state.map((i, index) => {
+        return <Tab key={index} data={i} />;
+      })}
     </div>
   );
 }
